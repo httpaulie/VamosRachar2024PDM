@@ -20,14 +20,16 @@
     <EditText
         android:id="@+id/totalAmount"
         android:layout_width="match_parent"
-        android:layout_height="53dp"
+        android:layout_height="wrap_content"
+        android:minHeight="48sp"
         android:hint="Valor Total"
         android:inputType="numberDecimal" />
 
     <EditText
         android:id="@+id/numberOfPeople"
         android:layout_width="match_parent"
-        android:layout_height="59dp"
+        android:layout_height="wrap_content"
+        android:minHeight="48sp"
         android:hint="Número de Pessoas"
         android:inputType="number" />
 
