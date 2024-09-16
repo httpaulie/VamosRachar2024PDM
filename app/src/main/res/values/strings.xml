@@ -1,3 +1,9 @@
 <resources>
-    <string name="app_name">VamosRachar</string>
+    <string name="app_name">Let\'s Split</string>
+    <string name="letsSplit">Let\'s Split!</string>
+    <string name="totalAmount">Total Amount</string>
+    <string name="numberOfPeople">Number of People</string>
+    <string name="result">Individual Value: </string>
+    <string name="share">Share</string>
+    <string name="hearResult">Hear Result</string>
 </resources>

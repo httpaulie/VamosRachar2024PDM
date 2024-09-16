@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Vamos Rachar</string>
+    <string name="letsSplit">Vamos Rachar!</string>
+    <string name="totalAmount">Valor Total</string>
+    <string name="numberOfPeople">Número de Pessoas</string>
+    <string name="result">Valor Individual: </string>
+    <string name="share">Compartilhar</string>
+    <string name="hearResult">Ouvir Resultado</string>
+</resources>
