@@ -1,4 +1,4 @@
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
     <string name="app_name">Let\'s Split</string>
     <string name="letsSplit">Let\'s Split!</string>
     <string name="totalAmount">Total Amount</string>
@@ -6,4 +6,8 @@
     <string name="result">Individual Value: </string>
     <string name="share">Share</string>
     <string name="hearResult">Hear Result</string>
+    <string name="saveResult">Save</string>
+    <string name="showHistory">History</string>
+    <string name="history">History</string>
+    <string name="title_activity_history" tools:ignore="MissingTranslation">HistoryActivity</string>
 </resources>

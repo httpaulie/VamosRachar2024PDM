@@ -2,14 +2,13 @@ package com.example.vamosrachar
 
 import android.Manifest
 import android.annotation.SuppressLint
-import android.content.pm.PackageManager
+import android.content.Context
 import android.location.Geocoder
 import android.location.Location
 import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.app.ActivityCompat
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import java.util.*
@@ -20,6 +19,7 @@ import android.text.TextWatcher
 import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
+import java.text.SimpleDateFormat
 import java.util.Locale
 
 
@@ -33,6 +33,8 @@ class MainActivity : AppCompatActivity(), TextToSpeech.OnInitListener {
     private lateinit var shareButton: Button
     private lateinit var ttsButton: Button
     private lateinit var tts: TextToSpeech
+    private lateinit var btnShowHistory: Button
+    private lateinit var btnSave: Button
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -45,6 +47,8 @@ class MainActivity : AppCompatActivity(), TextToSpeech.OnInitListener {
         shareButton = findViewById(R.id.shareButton)
         ttsButton = findViewById(R.id.ttsButton)
         tts = TextToSpeech(this, this)
+        btnSave = findViewById(R.id.btnSave)
+        btnShowHistory = findViewById(R.id.btnShowHistory)
 
         val textWatcher = object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
@@ -55,7 +59,6 @@ class MainActivity : AppCompatActivity(), TextToSpeech.OnInitListener {
         }
 
         requestLocationPermission()
-
         totalAmount.addTextChangedListener(textWatcher)
         numberOfPeople.addTextChangedListener(textWatcher)
 
@@ -65,6 +68,15 @@ class MainActivity : AppCompatActivity(), TextToSpeech.OnInitListener {
 
         ttsButton.setOnClickListener {
             speakResult()
+        }
+
+        btnSave.setOnClickListener {
+            saveData()
+        }
+
+        btnShowHistory.setOnClickListener {
+            val intent = Intent(this, HistoryActivity::class.java)
+            startActivity(intent)
         }
     }
 
@@ -101,13 +113,13 @@ class MainActivity : AppCompatActivity(), TextToSpeech.OnInitListener {
         }
     }
 
-        private fun generateShareReport(totalAmount: String, numberOfPeople: String, result: String): String {
+    private fun generateShareReport(totalAmount: String, numberOfPeople: String, result: String): String {
         return "Conta total: R$$totalAmount\n" +
                 "Número de pessoas: $numberOfPeople\n" +
                 //"Valor individual: R$$result\n" +
                 "$result\n" +
                 "Endereço: $currentAddress"
-        }
+    }
 
 
     private fun calculateAndDisplayResult() {
@@ -135,17 +147,47 @@ class MainActivity : AppCompatActivity(), TextToSpeech.OnInitListener {
             type = "text/plain"
         }
         startActivity(Intent.createChooser(shareIntent, "Compartilhar via"))
-
-//        val resultText = result.text.toString()
-//        if (resultText.isNotEmpty()) {
-//            val shareIntent = Intent().apply {
-//                action = Intent.ACTION_SEND
-//                putExtra(Intent.EXTRA_TEXT, resultText)
-//                type = "text/plain"
-//            }
-//            startActivity(Intent.createChooser(shareIntent, "Compartilhar via"))
-//        }
     }
+
+    private fun saveData() {
+        val totalAmountText = totalAmount.text.toString()
+        val resultText = result.text.toString()
+        val numberOfPeopleText = numberOfPeople.text.toString()
+
+        if (currentAddress != null && totalAmountText.isNotEmpty() && resultText.isNotEmpty() && numberOfPeopleText.isNotEmpty()) {
+            saveHistory(totalAmountText, resultText, numberOfPeopleText, currentAddress!!)
+        } else {
+            Toast.makeText(this, "Preencha todos os dados antes de salvar", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    @SuppressLint("MissingPermission")
+    private fun saveHistory(totalAmount: String, result: String, numberOfPeople: String, address: String) {
+        // Obter a data e a hora atuais
+        val currentTime = SimpleDateFormat("dd/MM/yyyy HH:mm:ss", Locale.getDefault()).format(Date())
+
+        // Obter a instância de SharedPreferences
+        val sharedPreferences = getSharedPreferences("LocationHistory", Context.MODE_PRIVATE)
+        val editor = sharedPreferences.edit()
+
+        // Obter o histórico existente como uma string e convertê-lo para uma lista
+        val existingHistoryString = sharedPreferences.getString("history", "")
+        val historyList = existingHistoryString?.split("||")?.toMutableList() ?: mutableListOf()
+
+        // Criar uma nova entrada de histórico
+        val newEntry = "Endereço: $address\nValor Total: R$$totalAmount\n$result\nPessoas: $numberOfPeople\nData: $currentTime"
+
+        // Adicionar o novo histórico no início da lista (para ordem descendente)
+        historyList.add(0, newEntry)
+
+        // Salvar a lista como uma string separada por "||"
+        editor.putString("history", historyList.joinToString("||"))
+        editor.apply()
+
+        Toast.makeText(this, "Histórico salvo", Toast.LENGTH_SHORT).show()
+
+    }
+
 
     private fun speakResult() {
         val resultText = result.text.toString()
